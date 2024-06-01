@@ -1,7 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, ConfigDict
+from starlette.requests import Request
 
 from crud_sql_alchemy import Bird, init_db
 from crud_sql_alchemy import Session as SessionLocal
@@ -9,6 +12,12 @@ from crud_sql_alchemy import Session as SessionLocal
 
 app = FastAPI()
 init_db()
+
+templates = Jinja2Templates(directory="templates")
+
+@app.get('/', response_class = HTMLResponse)
+def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 class BirdCreate(BaseModel):
     name: str
